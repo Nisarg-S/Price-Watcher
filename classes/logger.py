@@ -1,5 +1,6 @@
 import logging
 
+
 class Logger:
     def __init__(self, loggerName: str):
         self.logger = logging.getLogger(loggerName)
@@ -10,11 +11,10 @@ class Logger:
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         self.logger.addHandler(ch)
-        fh = logging.FileHandler('logout.log')
+        fh = logging.FileHandler('D:\Personal\Documents\web-scraper\log.log')
         fh.setLevel(logging.INFO)
         fh.setFormatter(formatter)
         self.logger.addHandler(fh)
-
 
     def debug(self, message):
         self.logger.debug(message)
@@ -24,7 +24,6 @@ class Logger:
 
     def error(self, message):
         self.logger.error(message)
-
 
 
 # create logger

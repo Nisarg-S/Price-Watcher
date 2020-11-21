@@ -4,6 +4,7 @@ from classes.database import Database
 from classes.logger import Logger
 from classes.AmazonScraper import AmazonScraper
 from classes.notifier import Mailer
+from classes.neweggScraper import NeweggScraper
 
 
 def main():
@@ -14,7 +15,10 @@ def main():
         productName = product[1]
         logger.info(f"URL - {url}")
         logger.info(f"Product name - {productName}")
-        price = amazonScraper.getPrice(url)
+        if 'amazon' in url:
+            price = amazonScraper.getPrice(url)
+        elif 'newegg' in url:
+            price = neweggScraper.getPrice(url)
         logger.info(f"Price - {price}")
         if price == 0:
             logger.error('Amazon Blocked the request')
@@ -34,6 +38,7 @@ def main():
 
 
 def priceProcessing(product: tuple, price: float) -> dict:
+    alltimePrice = product[3]
     monthPrice = product[5]
     monthDate = product[6]
     weekPrice = product[7]
@@ -42,7 +47,7 @@ def priceProcessing(product: tuple, price: float) -> dict:
     now = datetime.date.today()
     updateObj['LatestPrice'] = price
     updateObj['LastDatePricePulled'] = now
-    if price < product[3]:
+    if alltimePrice == 0 or price < alltimePrice:
         updateObj['LowestPriceAlltime'] = price
         updateObj['LowestPriceAlltimeDate'] = now
 
@@ -56,6 +61,8 @@ def priceProcessing(product: tuple, price: float) -> dict:
         updateObj['LowestPriceWeek'] = price
         updateObj['LowestPriceWeekDate'] = now
 
+    logger.info(f"{product[1]} - {updateObj}")
+
     db.updateProduct(updateObj, product[0])
     return updateObj
 
@@ -65,6 +72,7 @@ if __name__ == "__main__":
     db = Database()
     logger = Logger('Scheduled Job')
     amazonScraper = AmazonScraper()
+    neweggScraper = NeweggScraper()
     db.connect()
     mailer = Mailer()
     main()
