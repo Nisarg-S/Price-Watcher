@@ -4,7 +4,7 @@ This is a program to track various item prices across Amazon and Newegg.
 
 ## Setup
 
-1. To use this program you need a MySQL database set up locally with the following script.
+1. To use this program you need a MySQL database set up locally with the following table creation script.
 
 ```
 CREATE TABLE products(
